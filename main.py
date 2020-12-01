@@ -1,9 +1,5 @@
 import whois
 from openpyxl import *
-from time import sleep
-
-# sorgula fonksiyonu parametre olarak verilen domaine sorgu atar
-# ve geriye domain son kullanma tarihini döndürür
 
 
 def sorgula(domain):
@@ -14,42 +10,22 @@ def sorgula(domain):
     return tarih.expiration_date
 
 
-
-# Burda excel dosyasını açıp aktif ettik
-book = load_workbook("test.xlsx")
+book = load_workbook("demo-icerik.xlsx")
 sheet = book.active
 
 i = 1
-# Sonsuz bir döngü açıyoruz
+
 while True:
 
-    # eğer A sütunu boş değilse işlem yap
     if sheet['A' + str(i)].value:
-        # sorgula fonksiyonumuzu çalıştırıyoruz ve domain olarak excelden aldığımız veriyi veriyoruz
-        # sorgunun sonucunu da expired_date isimli bir değişkene atıyoruz
-    
         expired_date = sorgula(sheet['A' + str(i)].value)
-        print(expired_date, 'A'+str(i), sheet['A' + str(i)].value, type(expired_date))
-
-        # whois kütüphanesi bazı domainlerde çalışmıyor. Bu tip durumlarda başka bir şey kullanmamız lazım
-        # expired_date None ise alternatif yöntem ile expired_date i elde etmemiz lazım. Şu an bu yöntem ne bilmiyorum
-        # sen halledersin :)
-
-
-        # expired_date değerini excel dosyasında B sütununa yazıyoruz
         sheet['B' + str(i)] = str(expired_date)
-        NoneType = type(None)
-        if type(expired_date) == NoneType:
-            domain = sheet['A' + str(i)].value
-            info = whois.whois(f'"{domain}"')
-            sheet['B' + str(i)] = info.__dict__['text']
-        else:
-            print('dındın')
-
-        # domainleri gezmek için i değerini her seferinde 1 arttırıyoruz
-        i += 1
         
-    # eğer A sütunu boşsa döngüyü bitir
+        if type(expired_date) == list:
+            sheet['B' + str(i)] = expired_date[0]
+        
+        i += 1
+
     else:
         break
 
